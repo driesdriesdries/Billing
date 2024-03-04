@@ -1,225 +1,223 @@
+// Variables
 $padding: 2rem;
+$table-border-color: #ddd;
+$thead-background-color: #f2f2f2;
+$mobile-breakpoint: 600px;
 
+// Mixins
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+// Invoice Container
 .invoice-container {
-    background-color: white;
-    display: flex;
-    justify-content: center;
-    .invoice {
-        //background-color: green;
-        width: 80rem;
-        max-width: 1140px;
-        //border: 1px solid #2f2f2f;
-        padding: $padding;
-        margin-top: 1rem;
-        box-shadow: var(--shadow);
-        .header {
-            //background-color: tomato;
-            text-align: right;
-            border-bottom: 2px solid #2f2f2f;
-            padding-top: $padding;
-            padding-bottom: $padding;
-            p {
-                margin-bottom: .5rem;
-            }
+  background-color: white;
+  @include flex-center;
+  
+  .invoice {
+    width: 80rem;
+    max-width: 1140px;
+    padding: $padding;
+    margin-top: 1rem;
+    box-shadow: var(--shadow);
+    
+    // Header
+    .header {
+      text-align: right;
+      border-bottom: 2px solid #2f2f2f;
+      padding-top: $padding;
+      padding-bottom: $padding;
+    }
+    
+    // Details
+    .details {
+      padding-top: $padding;
+      padding-bottom: $padding;
+      display: flex;
+      justify-content: space-between;
+      
+      .left, .right {
+        width: 50%;
+        h4 {
+          margin-bottom: 1rem;
         }
-        .details {
-            .left, .right {
-                width: 50%;
-                h4 {
-                    //background-color: yellow;
-                    margin-bottom: 1rem;
-                }
-            }
-            padding-top: $padding;
-            padding-bottom: $padding;
-            // background-color: #fbfbfb;
-            display: flex;
-            justify-content: space-between;
-            .left {
-                //background-color: yellow;
-            }
-            .right {
-                //background-color: crimson;
-                text-align: right;
-                p {
-                    margin-bottom: .5rem;
-                }
-            }
+      }
+      
+      .right {
+        text-align: right;
+        p {
+          margin-bottom: .5rem;
         }
-        .table {
-            //background-color: lightblue;
-            // Responsive table styling with SCSS
-            $table-border-color: #ddd;
-            $thead-background-color: #f2f2f2;
-            $mobile-breakpoint: 600px;
-            padding-top: $padding;
-            padding-bottom: $padding;
-            table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 2rem;
-
-            th, td {
-                text-align: left;
-                padding: $padding;
-                border: 1px solid $table-border-color;
-            }
-
-            th {
-                background-color: $thead-background-color;
-            }
-            }
-
-            @media screen and (max-width: $mobile-breakpoint) {
-            table, thead, tbody, th, td, tr {
-                display: block;
-            }
-
-            thead tr {
-                position: absolute;
-                top: -9999px;
-                left: -9999px;
-            }
-
-            tr { border: 1px solid #ccc; }
-
-            td {
-                border: none;
-                border-bottom: 1px solid #eee;
-                position: relative;
-                padding-left: 50%;
-                text-align: right;
-
-                &:before {
-                // Now like a table header
-                position: absolute;
-                // Top/left values mimic padding
-                top: 6px;
-                left: 6px;
-                width: 45%;
-                padding-right: 10px;
-                white-space: nowrap;
-                text-align: left;
-                font-weight: bold;
-                }
-            }
-
-            // Label the data
-            td:nth-of-type(1):before { content: "Items"; }
-            td:nth-of-type(2):before { content: "Quantity"; }
-            td:nth-of-type(3):before { content: "Price"; }
-            td:nth-of-type(4):before { content: "Amount"; }
-            }
-
+      }
+    }
+    
+    // Table
+    .table {
+      padding-top: $padding;
+      padding-bottom: $padding;
+      
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 2rem;
+        
+        th, td {
+          text-align: left;
+          padding: $padding;
+          border: 1px solid $table-border-color;
         }
-        .total-container {
-            //background-color: peachpuff;
-            text-align: right;
-            span {
-                font-size: 2rem;
-                margin-bottom: 2rem;
-                padding-top: 2rem;
-                display: inline-block;
-            }
-            .label {
-                font-weight: bold;
-                padding-right: 4rem;
-            }
-            .amount {
-                //background-color: red;
-                padding-right: 4rem;
-            }
+        
+        th {
+          background-color: $thead-background-color;
         }
-        .footer {
-            //background-color: orange;
-            padding: $padding;
-            p {
-                margin-bottom: .5rem;
-            }
+      }
+      
+      @media screen and (max-width: $mobile-breakpoint) {
+        table, thead, tbody, th, td, tr {
+          display: block;
         }
+        
+        thead tr {
+          position: absolute;
+          top: -9999px;
+          left: -9999px;
+        }
+        
+        tr {
+          border: 1px solid #ccc;
+        }
+        
+        td {
+          border: none;
+          border-bottom: 1px solid #eee;
+          position: relative;
+          padding-left: 50%;
+          text-align: right;
+          
+          &:before {
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            width: 45%;
+            padding-right: 10px;
+            white-space: nowrap;
+            text-align: left;
+            font-weight: bold;
+          }
+        }
+        
+        td:nth-of-type(1):before { content: "Items"; }
+        td:nth-of-type(2):before { content: "Quantity"; }
+        td:nth-of-type(3):before { content: "Price"; }
+        td:nth-of-type(4):before { content: "Amount"; }
+      }
+    }
+    
+    // Total Container
+    .total-container {
+      text-align: right;
+      
+      span {
+        font-size: 2rem;
+        margin-bottom: 2rem;
+        padding-top: 2rem;
+        display: inline-block;
+        
+        &.label {
+          font-weight: bold;
+          padding-right: 4rem;
+        }
+        
+        &.amount {
+          padding-right: 4rem;
+        }
+      }
+    }
+    
+    // Footer
+    .footer {
+      padding: $padding;
+      p {
+        margin-bottom: .5rem;
+      }
     }
   }
-  
+}
 
-  $padding: 2rem;
+// Client Container
 .client-container {
-    // background-color: pink;
-    display: flex;
-    justify-content: center;
-    p {
-        margin-bottom: 1rem;
+  @include flex-center;
+  
+  .client {
+    width: 80rem;
+    max-width: 1140px;
+    padding: $padding;
+    margin-top: 1rem;
+    flex-direction: column;
+    box-shadow: var(--shadow);
+    
+    // Logo
+    .logo img {
+      height: 8rem;
     }
-    .client {
-        width: 80rem;
-        max-width: 1140px;
-        //border: 1px solid #2f2f2f;
-        padding: $padding;
+    
+    // Details
+    .details {
+      margin-top: 1rem;
+      font-weight: bold;
+      
+      p span {
+        font-weight: 100;
+      }
+    }
+    
+    // Invoices Group
+    .invoices-group {
+      .status {
+        display: inline-block;
         margin-top: 1rem;
-        display: flex;
-        flex-direction: column;
-        box-shadow: var(--shadow);
-        .logo {
-            img {
-                height: 8rem;
-            }
+        
+        h3 span {
+          padding-left: 1rem;
+          padding-right: 1rem;
+          border-radius: 5px;
         }
-        .details {
-            //background-color: tomato;
-            margin-top: 1rem;
-            font-weight: bold;
-            p span {
-                font-weight: 100;
+      }
+      
+      .invoice-list {
+        .item {
+          display: flex;
+          justify-content: space-between;
+          margin-top: 1rem;
+          padding: $padding;
+          border: 2px solid #efefef;
+          border-radius: 5px;
+          margin-bottom: 1rem;
+          box-shadow: var(--shadow-light);
+          
+          .left {
+            @include flex-center;
+            padding-left: 2rem;
+            
+            p {
+              margin-bottom: 0;
             }
+          }
+          
+          .right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            padding-right: 2rem;
+            
+            p {
+              margin-bottom: 0;
+            }
+          }
         }
-        .invoices-group {
-            //background-color: cyan;
-            .status {
-                //background-color: royalblue;
-                display: inline-block;
-                margin-top: 1rem;
-                h3 {
-                    span {
-                        padding-left: 1rem;
-                        padding-right: 1rem;
-                        border-radius: 5px;
-                    }
-                }
-            }
-            .invoice-list {
-                //background-color: magenta;
-                .item {
-                    //background-color: honeydew;
-                    display: flex;
-                    justify-content: space-between;
-                    margin-top: 1rem;
-                    padding-top: 1rem;
-                    padding-bottom: 1rem;
-                    border: 2px solid #efefef;
-                    border-radius: 5px;
-                    margin-bottom: 1rem;
-                    box-shadow: var(--shadow-light);
-                    .left {
-                        //background-color: rosybrown;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        padding-left: 2rem;
-                        p {
-                            margin-bottom: 0px;
-                        }
-                    }
-                    .right {
-                        //background-color: yellow;
-                        display: flex;
-                        flex-direction: column;
-                        align-items: center;
-                        padding-right: 2rem;
-                        p {
-                            margin-bottom: 0px;
-                        }
-                    }
-                }
-            }
-        }
+      }
     }
+  }
 }
