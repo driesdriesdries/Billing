@@ -6,6 +6,13 @@
  * Author: Andries Bester
  * Author URI: www.andriesbester.com
  */
+
+// Enqueue billingstyles.css file
+function enqueue_billing_styles() {
+    wp_enqueue_style( 'billing-styles', plugin_dir_url( __FILE__ ) . 'billingstyles.css', array(), '1.0' );
+}
+add_action( 'wp_enqueue_scripts', 'enqueue_billing_styles' );
+
 //Invoice and Client Post Type
 function create_custom_post_types() {
     // Labels for the Clients Post Type
