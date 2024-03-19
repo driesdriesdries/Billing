@@ -29,6 +29,9 @@ $mobile-breakpoint: 600px;
       border-bottom: 2px solid #2f2f2f;
       padding-top: $padding;
       padding-bottom: $padding;
+      p {
+        margin-bottom: 5px;
+      }
     }
     
     // Details
@@ -61,11 +64,16 @@ $mobile-breakpoint: 600px;
       table {
         width: 100%;
         border-collapse: collapse;
-        font-size: 2rem;
-        
+        font-size: 1.6rem;
+        .price-column, .quantity-column {
+          text-align: center;
+        }
+        .amount-column {
+          text-align: right;
+        }
         th, td {
           text-align: left;
-          padding: $padding;
+          padding: 1rem;
           border: 1px solid $table-border-color;
         }
         
@@ -120,7 +128,7 @@ $mobile-breakpoint: 600px;
       text-align: right;
       
       span {
-        font-size: 2rem;
+        font-size: 1.6rem;
         margin-bottom: 2rem;
         padding-top: 2rem;
         display: inline-block;
@@ -131,7 +139,7 @@ $mobile-breakpoint: 600px;
         }
         
         &.amount {
-          padding-right: 4rem;
+          padding-right: 1rem;
         }
       }
     }
@@ -139,6 +147,9 @@ $mobile-breakpoint: 600px;
     // Footer
     .footer {
       padding: $padding;
+      h4 {
+        margin-bottom: 1.5rem;
+      }
       p {
         margin-bottom: .5rem;
       }

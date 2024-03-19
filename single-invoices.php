@@ -55,9 +55,9 @@ if (!is_user_logged_in()) {
                 <thead>
                     <tr>
                         <th>Items</th>
-                        <th>Quantity</th>
-                        <th>Price</th>
-                        <th>Amount</th>
+                        <th class="quantity-column">Quantity</th>
+                        <th class="price-column">Price</th>
+                        <th class="amount-column">Amount</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -73,9 +73,9 @@ if (!is_user_logged_in()) {
                     ?>
                     <tr>
                         <td><?php echo esc_html($item); ?></td>
-                        <td><?php echo esc_html($quantity); ?></td>
-                        <td>R<?php echo number_format($price, 2, '.', ','); ?></td>
-                        <td>R<?php echo number_format($amount, 2, '.', ','); ?></td>
+                        <td class="quantity-column"><?php echo esc_html($quantity); ?></td>
+                        <td class="price-column">R<?php echo number_format($price, 2, '.', ','); ?></td>
+                        <td class="amount-column">R<?php echo number_format($amount, 2, '.', ','); ?></td>
                     </tr>
                     <?php endwhile; endif; ?>
                 </tbody>
