@@ -17,12 +17,9 @@ if (!is_user_logged_in()) {
     <div class="invoice">
         <div class="header">
             <h2>Invoice</h2>
-            <p>Andries Bester</p>
-            <p>13 Firdale Avenue</p>
-            <p>Gardens</p>
+            <p>thePhantomPress</p>
             <p>Cape Town</p>
-            <p>Mobile: +27712914643</p>
-            <p><a href="www.andriesbester.com">andriesbester.com</a></p>
+            <p>South Africa</p>
         </div>
         <div class="details">
             <div class="left">
@@ -87,9 +84,9 @@ if (!is_user_logged_in()) {
         </div>
         <div class="footer">
             <h4>Notes</h4>
-            <p>Account Holder: AG Bester</p>
+            <p>thePhantomPress</p>
             <p>Bank: FNB</p>
-            <p>Account Number: 62597120098</p>
+            <p>Account Number: 63080034316</p>
             <p>Branch Code: 250665</p>
         </div>
     </div>
