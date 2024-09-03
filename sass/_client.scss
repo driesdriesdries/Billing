@@ -1,0 +1,75 @@
+// Client Container
+.client-container {
+  @include flex-center;
+  
+  .client {
+    width: 80rem;
+    max-width: 1140px;
+    padding: $padding;
+    margin-top: 1rem;
+    flex-direction: column;
+    box-shadow: var(--shadow);
+    
+    // Logo
+    .logo img {
+      height: 8rem;
+    }
+    
+    // Details
+    .details {
+      margin-top: 1rem;
+      font-weight: bold;
+      
+      p span {
+        font-weight: 100;
+      }
+    }
+    
+    // Invoices Group
+    .invoices-group {
+      .status {
+        display: inline-block;
+        margin-top: 1rem;
+        
+        h3 span {
+          padding-left: 1rem;
+          padding-right: 1rem;
+          border-radius: 5px;
+        }
+      }
+      
+      .invoice-list {
+        .item {
+          display: flex;
+          justify-content: space-between;
+          margin-top: 1rem;
+          padding: $padding;
+          border: 2px solid #efefef;
+          border-radius: 5px;
+          margin-bottom: 1rem;
+          box-shadow: var(--shadow-light);
+          
+          .left {
+            @include flex-center;
+            padding-left: 2rem;
+            
+            p {
+              margin-bottom: 0;
+            }
+          }
+          
+          .right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            padding-right: 2rem;
+            
+            p {
+              margin-bottom: 0;
+            }
+          }
+        }
+      }
+    }
+  }
+}
