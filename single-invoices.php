@@ -16,6 +16,7 @@ if (!is_user_logged_in()) {
 <div class="invoice-container">
     <div class="invoice">
         <div class="header">
+            <img src="<?php echo plugins_url( 'phantomportrait.svg', __FILE__ ); ?>" alt="Logo">    
             <h2>Invoice</h2>
             <p>thePhantomPress</p>
             <p>Cape Town</p>
@@ -38,7 +39,7 @@ if (!is_user_logged_in()) {
                 ?>
             </div>
             <div class="right">
-                <h4>Invoice Number: <?php the_field('invoice_number'); ?></h4>
+                <h4>Invoice #: <?php the_field('invoice_number'); ?></h4>
                 <p>Invoice Date: <?php the_field('invoice_date'); ?></p>
                 <p>Payment Due: <?php the_field('due_date'); ?></p>
                 <?php
@@ -58,24 +59,29 @@ if (!is_user_logged_in()) {
                     </tr>
                 </thead>
                 <tbody>
-                    <?php
-                    $total_amount_due = 0;
-                    if (have_rows('services_provided')):
-                        while (have_rows('services_provided')): the_row();
-                            $item = get_sub_field('item');
-                            $quantity = get_sub_field('quantity');
-                            $price = get_sub_field('price');
-                            $amount = $price * $quantity;
-                            $total_amount_due += $amount;
-                    ?>
-                    <tr>
-                        <td><?php echo esc_html($item); ?></td>
-                        <td class="quantity-column"><?php echo esc_html($quantity); ?></td>
-                        <td class="price-column">R<?php echo number_format($price, 2, '.', ','); ?></td>
-                        <td class="amount-column">R<?php echo number_format($amount, 2, '.', ','); ?></td>
-                    </tr>
-                    <?php endwhile; endif; ?>
-                </tbody>
+    <?php
+    $total_amount_due = 0;
+    if (have_rows('services_provided')):
+        while (have_rows('services_provided')): the_row();
+            $item = get_sub_field('item');
+            $quantity = get_sub_field('quantity');
+            $price = get_sub_field('price');
+            $amount = $price * $quantity;
+            $total_amount_due += $amount;
+    ?>
+    <tr>
+        <td><?php echo esc_html($item); ?></td>
+        <td class="quantity-column"><?php echo esc_html($quantity); ?></td>
+        <td class="price-column">
+            <?php echo ($price == 0) ? 'Free' : 'R' . number_format($price, 2, '.', ','); ?>
+        </td>
+        <td class="amount-column">
+            <?php echo ($amount == 0) ? 'Free' : 'R' . number_format($amount, 2, '.', ','); ?>
+        </td>
+    </tr>
+    <?php endwhile; endif; ?>
+</tbody>
+
             </table>
         </div>
         <div class="total-container">
@@ -86,7 +92,7 @@ if (!is_user_logged_in()) {
             <h4>Notes</h4>
             <p>thePhantomPress</p>
             <p>Bank: FNB</p>
-            <p>Account Number: 63080034316</p>
+            <p>Account Number: 63119125151</p>
             <p>Branch Code: 250665</p>
         </div>
     </div>

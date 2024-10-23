@@ -1,6 +1,5 @@
 // Invoice Container
 .invoice-container {
-  background-color: white;
   @include flex-center;
   
   .invoice {
@@ -9,22 +8,28 @@
     padding: $padding;
     margin-top: 1rem;
     box-shadow: var(--shadow);
-    background-color: tomato;
+    //background-color: tomato;
     
     // Header
     .header {
-      background-color: rgb(164, 119, 204);
+      //background-color: rgb(164, 119, 204);
       text-align: right;
       border-bottom: 2px solid #2f2f2f;
       padding: $padding 1rem;
       p {
         margin-bottom: 5px;
       }
+      h2 {
+        margin-bottom: 0;
+      }
+      img {
+        width: 8rem;
+      }
     }
     
     // Details
     .details {
-      background-color: cyan;
+      //background-color: cyan;
       padding-top: $padding;
       padding-bottom: $padding;
       padding-left: 1rem;
@@ -36,6 +41,9 @@
         width: 50%;
         h4 {
           margin-bottom: 1rem;
+        }
+        a {
+          color: inherit;
         }
       }
       
@@ -51,7 +59,7 @@
     .table {
       padding-top: $padding;
       padding-bottom: $padding;
-      background-color: greenyellow;
+      //background-color: greenyellow;
       table {
         width: 100%;
         border-collapse: collapse;
@@ -117,7 +125,7 @@
     // Total Container
     .total-container {
       text-align: right;
-      background-color: rgb(232, 61, 201);
+      //background-color: rgb(232, 61, 201);
       span {
         font-size: 1.6rem;
         margin-bottom: 2rem;
@@ -137,7 +145,7 @@
     
     // Footer
     .footer {
-      background-color: wheat;
+      //background-color: wheat;
       padding-top: 2rem;
       padding-bottom: 2rem;
       padding-left: 1rem;
