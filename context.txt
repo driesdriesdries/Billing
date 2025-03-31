@@ -1,0 +1,335 @@
+/* === File: single-invoices.php === */
+<?php
+/**
+ * The template for displaying all single posts of type 'invoices'
+ *
+ * @link https://developer.wordpress.org/themes/basics/template-hierarchy/#single-post
+ * @package Andries
+ */
+
+get_header();
+if (!is_user_logged_in()) {
+    wp_redirect('https://www.andriesbester.com'); // Direct URL
+    exit;
+}
+?>
+
+<div class="invoice-container">
+    <div class="invoice">
+        <div class="header">
+            <h2>Invoice</h2>
+            <p>Andries Bester</p>
+            <p>13 Firdale Avenue</p>
+            <p>Gardens</p>
+            <p>Cape Town</p>
+            <p>Mobile: +27712914643</p>
+            <p><a href="www.andriesbester.com">andriesbester.com</a></p>
+        </div>
+        <div class="details">
+            <div class="left">
+                <h4>Bill To:</h4>
+                <?php
+                $associated_clients = get_field('associated_client');
+                if ($associated_clients):
+                    $client_post = $associated_clients[0];
+                    if ($client_post):
+                        $client_link = get_permalink($client_post->ID);
+                ?>
+                        <p><a href="<?php echo esc_url($client_link); ?>"><?php echo esc_html($client_post->post_title); ?></a></p>
+                <?php
+                    endif;
+                endif;
+                ?>
+            </div>
+            <div class="right">
+                <h4>Invoice Number: <?php the_field('invoice_number'); ?></h4>
+                <p>Invoice Date: <?php the_field('invoice_date'); ?></p>
+                <p>Payment Due: <?php the_field('due_date'); ?></p>
+                <?php
+                $invoice_status = get_field('invoice_status');
+                ?>
+                <p>Status: <span><?php echo esc_html($invoice_status); ?></span></p>
+            </div>
+        </div>
+        <div class="table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Items</th>
+                        <th class="quantity-column">Quantity</th>
+                        <th class="price-column">Price</th>
+                        <th class="amount-column">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    $total_amount_due = 0;
+                    if (have_rows('services_provided')):
+                        while (have_rows('services_provided')): the_row();
+                            $item = get_sub_field('item');
+                            $quantity = get_sub_field('quantity');
+                            $price = get_sub_field('price');
+                            $amount = $price * $quantity;
+                            $total_amount_due += $amount;
+                    ?>
+                    <tr>
+                        <td><?php echo esc_html($item); ?></td>
+                        <td class="quantity-column"><?php echo esc_html($quantity); ?></td>
+                        <td class="price-column">R<?php echo number_format($price, 2, '.', ','); ?></td>
+                        <td class="amount-column">R<?php echo number_format($amount, 2, '.', ','); ?></td>
+                    </tr>
+                    <?php endwhile; endif; ?>
+                </tbody>
+            </table>
+        </div>
+        <div class="total-container">
+            <span class="label">Total Amount Due:</span>
+            <span class="amount">R<?php echo number_format($total_amount_due, 2, '.', ','); ?></span>
+        </div>
+        <div class="footer">
+            <h4>Notes</h4>
+            <p>Account Holder: AG Bester</p>
+            <p>Bank: FNB</p>
+            <p>Account Number: 62597120098</p>
+            <p>Branch Code: 250665</p>
+        </div>
+    </div>
+</div>
+
+<?php get_footer(); ?>
+
+
+/* === File: single-clients.php === */
+<?php
+/**
+ * The template for displaying all single posts of type 'clients'
+ *
+ * @link https://developer.wordpress.org/themes/basics/template-hierarchy/#single-post
+ * @package Andries
+ */
+
+global $wpdb;
+
+get_header();
+
+if (!is_user_logged_in()) {
+    wp_redirect('https://www.andriesbester.com'); // Direct URL
+    exit;
+}
+
+while (have_posts()): the_post();
+
+    $current_client_id = get_the_ID();
+    $client_logo = get_field('client_logo');
+    $client_name = get_field('client_name') ?: get_the_title(); // Fallback to post title if no client name set
+    $email_address = get_field('email_address');
+    $phone_number = get_field('phone_number');
+    $address = get_field('address');
+    $client_since = get_field('client_since');
+    $client_since_formatted = $client_since ? date("d/m/Y", strtotime($client_since)) : '';
+    $logo_url = $client_logo['url'] ?? ''; // Default to empty string if no logo
+
+    // Query invoices related to this client
+    $invoice_ids = $wpdb->get_col($wpdb->prepare("
+        SELECT pm.post_id
+        FROM $wpdb->postmeta pm
+        INNER JOIN $wpdb->posts p ON pm.post_id = p.ID
+        WHERE pm.meta_key = 'associated_client'
+        AND pm.meta_value LIKE %s
+        AND p.post_status = 'publish'
+    ", '%' . $wpdb->esc_like(':"' . $current_client_id . '";') . '%'));
+
+    // Organize invoices by status
+    $invoices_by_status = [];
+
+    if (!empty($invoice_ids)) {
+        foreach ($invoice_ids as $invoice_id) {
+            $status = get_post_meta($invoice_id, 'invoice_status', true);
+            $invoice_post = get_post($invoice_id); // Get the invoice post object
+            $invoices_by_status[$status][] = [
+                'ID' => $invoice_id,
+                'title' => $invoice_post->post_title,
+                'permalink' => get_permalink($invoice_id),
+                'due_date' => get_post_meta($invoice_id, 'due_date', true),
+            ];
+        }
+    }
+
+    // Status colors
+    $status_colors = [
+        'Draft' => '#808080',
+        'Sent' => '#0000FF',
+        'Viewed' => '#FFD700',
+        'Paid' => '#008000',
+        'Overdue' => '#FF4500',
+        'Cancelled' => '#FF0000',
+    ];
+    ?>
+
+    <div class="client-container">
+        <div class="client">
+            <div class="logo"><img src="<?php echo esc_url($logo_url); ?>" alt="<?php echo esc_attr($client_name); ?> Logo"></div>
+            <div class="details">
+                <p>Name: <span><?php echo esc_html($client_name); ?></span></p>
+                <p>Email: <span><?php echo esc_html($email_address); ?></span></p>
+                <p>Phone: <span><?php echo esc_html($phone_number); ?></span></p>
+                <p>Address: <span><?php echo esc_html($address); ?></span></p>
+                <p>Client Since: <span><?php echo esc_html($client_since_formatted); ?></span></p>
+            </div>
+            <?php foreach ($invoices_by_status as $status => $invoices): ?>
+                <div class="invoices-group">
+                    <div class="status"><h3>Status: <span style="background-color:<?php echo esc_attr($status_colors[$status] ?? '#000000'); ?>; color: #ffffff;"><?php echo esc_html($status); ?></span></h3></div>
+                    <div class="invoice-list">
+                        <?php foreach ($invoices as $invoice): ?>
+                            <?php
+                            // Initialize the total amount due for this invoice
+                            $total_amount_due = 0;
+                            
+                            // Check if the invoice has services provided and calculate the total
+                            if (have_rows('services_provided', $invoice['ID'])): 
+                                while (have_rows('services_provided', $invoice['ID'])): the_row(); 
+                                    $quantity = get_sub_field('quantity');
+                                    $price = get_sub_field('price');
+                                    $total_amount_due += $quantity * $price; // Calculate the line total and add to total amount due
+                                endwhile;
+                            endif;
+                            ?>
+                            <div class="item">
+                                <div class="left">
+                                    <p><a href="<?php echo esc_url($invoice['permalink']); ?>"><?php echo esc_html($invoice['title']); ?></a></p>
+                                </div>
+                                <div class="right">
+                                    <p>Due Date: <?php echo esc_html(date("d F Y", strtotime($invoice['due_date']))); ?></p>
+                                    <p>Amount Due: R<?php echo esc_html(number_format($total_amount_due, 2, '.', ',')); ?></p>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+<?php endwhile; ?>
+<?php get_footer(); ?>
+
+
+/* === File: billing.php === */
+<?php
+/**
+ * Plugin Name: Billing - Invoices and Clients Management
+ * Description: A plugin to manage invoices and clients directly from WordPress.
+ * Version: 1.0
+ * Author: Andries Bester
+ * Author URI: www.andriesbester.com
+ */
+
+// Enqueue billingstyles.css file
+function enqueue_billing_styles() {
+    wp_enqueue_style( 'billing-styles', plugin_dir_url( __FILE__ ) . 'billingstyles.css', array(), '1.0' );
+}
+add_action( 'wp_enqueue_scripts', 'enqueue_billing_styles' );
+
+//Invoice and Client Post Type
+function create_custom_post_types() {
+    // Labels for the Clients Post Type
+    $labels_clients = array(
+        'name'                  => _x('Clients', 'Post Type General Name', 'textdomain'),
+        'singular_name'         => _x('Client', 'Post Type Singular Name', 'textdomain'),
+        'menu_name'             => __('Clients', 'textdomain'),
+        'name_admin_bar'        => __('Client', 'textdomain'),
+        'archives'              => __('Client Archives', 'textdomain'),
+        'attributes'            => __('Client Attributes', 'textdomain'),
+        'parent_item_colon'     => __('Parent Client:', 'textdomain'),
+        'all_items'             => __('All Clients', 'textdomain'),
+        'add_new_item'          => __('Add New Client', 'textdomain'),
+        'add_new'               => __('Add New', 'textdomain'),
+        'new_item'              => __('New Client', 'textdomain'),
+        'edit_item'             => __('Edit Client', 'textdomain'),
+        'update_item'           => __('Update Client', 'textdomain'),
+        'view_item'             => __('View Client', 'textdomain'),
+        'view_items'            => __('View Clients', 'textdomain'),
+        'search_items'          => __('Search Client', 'textdomain'),
+        'not_found'             => __('Not found', 'textdomain'),
+        'not_found_in_trash'    => __('Not found in Trash', 'textdomain'),
+        'featured_image'        => __('Client Image', 'textdomain'),
+        'set_featured_image'    => __('Set client image', 'textdomain'),
+        'remove_featured_image' => __('Remove client image', 'textdomain'),
+        'use_featured_image'    => __('Use as client image', 'textdomain'),
+        'insert_into_item'      => __('Insert into client', 'textdomain'),
+        'uploaded_to_this_item' => __('Uploaded to this client', 'textdomain'),
+        'items_list'            => __('Clients list', 'textdomain'),
+        'items_list_navigation' => __('Clients list navigation', 'textdomain'),
+        'filter_items_list'     => __('Filter clients list', 'textdomain'),
+    );
+    register_post_type('clients',
+        array(
+            'labels'        => $labels_clients,
+            'public'        => true,
+            'has_archive'   => true,
+            'rewrite'       => array('slug' => 'clients'),
+            'supports'      => array('title', 'editor', 'thumbnail'),
+            'show_in_rest'  => false, // Disable Gutenberg editor
+            'menu_icon'     => 'dashicons-businessperson', // Custom icon for Clients
+        )
+    );
+
+    // Labels for the Invoices Post Type
+    $labels_invoices = array(
+        'name'                  => _x('Invoices', 'Post Type General Name', 'textdomain'),
+        'singular_name'         => _x('Invoice', 'Post Type Singular Name', 'textdomain'),
+        'menu_name'             => __('Invoices', 'textdomain'),
+        'name_admin_bar'        => __('Invoice', 'textdomain'),
+        'archives'              => __('Invoice Archives', 'textdomain'),
+        'attributes'            => __('Invoice Attributes', 'textdomain'),
+        'parent_item_colon'     => __('Parent Invoice:', 'textdomain'),
+        'all_items'             => __('All Invoices', 'textdomain'),
+        'add_new_item'          => __('Add New Invoice', 'textdomain'),
+        'add_new'               => __('Add New', 'textdomain'),
+        'new_item'              => __('New Invoice', 'textdomain'),
+        'edit_item'             => __('Edit Invoice', 'textdomain'),
+        'update_item'           => __('Update Invoice', 'textdomain'),
+        'view_item'             => __('View Invoice', 'textdomain'),
+        'view_items'            => __('View Invoices', 'textdomain'),
+        'search_items'          => __('Search Invoice', 'textdomain'),
+        'not_found'             => __('Not found', 'textdomain'),
+        'not_found_in_trash'    => __('Not found in Trash', 'textdomain'),
+        'featured_image'        => __('Invoice Image', 'textdomain'),
+        'set_featured_image'    => __('Set invoice image', 'textdomain'),
+        'remove_featured_image' => __('Remove invoice image', 'textdomain'),
+        'use_featured_image'    => __('Use as invoice image', 'textdomain'),
+        'insert_into_item'      => __('Insert into invoice', 'textdomain'),
+        'uploaded_to_this_item' => __('Uploaded to this invoice', 'textdomain'),
+        'items_list'            => __('Invoices list', 'textdomain'),
+        'items_list_navigation' => __('Invoices list navigation', 'textdomain'),
+        'filter_items_list'     => __('Filter invoices list', 'textdomain'),
+    );
+    register_post_type('invoices',
+        array(
+            'labels'        => $labels_invoices,
+            'public'        => true,
+            'has_archive'   => true,
+            'rewrite'       => array('slug' => 'invoices'),
+            'supports'      => array('title', 'editor', 'thumbnail'),
+            'show_in_rest'  => false, // Disable Gutenberg editor
+            'menu_icon'     => 'dashicons-editor-insertmore', // Custom icon for Invoices
+        )
+    );
+}
+add_action('init', 'create_custom_post_types');
+
+function billing_load_custom_templates( $template ) {
+    global $post;
+
+    if (isset($post) && !empty($post)) {
+        if ('clients' === $post->post_type) {
+            $template = plugin_dir_path(__FILE__) . 'single-clients.php';
+        } elseif ('invoices' === $post->post_type) {
+            $template = plugin_dir_path(__FILE__) . 'single-invoices.php';
+        }
+    }
+
+    return $template;
+}
+add_filter('template_include', 'billing_load_custom_templates', 99);
+
+

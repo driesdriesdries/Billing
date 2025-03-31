@@ -13,7 +13,21 @@ function enqueue_billing_styles() {
 }
 add_action( 'wp_enqueue_scripts', 'enqueue_billing_styles' );
 
-//Invoice and Client Post Type
+// Create top-level Billing menu
+function billing_register_menu() {
+    add_menu_page(
+        'Billing',            // Page title
+        'Billing',            // Menu title
+        'manage_options',     // Capability
+        'billing',            // Menu slug
+        '',                   // No callback needed since this is just a container
+        'dashicons-admin-users', // Updated icon: user icon instead of a gear
+        5                     // Menu position to push it toward the top half of the sidebar
+    );
+}
+add_action('admin_menu', 'billing_register_menu');
+
+// Invoice and Client Post Type Registration
 function create_custom_post_types() {
     // Labels for the Clients Post Type
     $labels_clients = array(
@@ -54,6 +68,7 @@ function create_custom_post_types() {
             'supports'      => array('title', 'editor', 'thumbnail'),
             'show_in_rest'  => false, // Disable Gutenberg editor
             'menu_icon'     => 'dashicons-businessperson', // Custom icon for Clients
+            'show_in_menu'  => 'billing' // Display as a submenu under Billing
         )
     );
 
@@ -96,6 +111,7 @@ function create_custom_post_types() {
             'supports'      => array('title', 'editor', 'thumbnail'),
             'show_in_rest'  => false, // Disable Gutenberg editor
             'menu_icon'     => 'dashicons-editor-insertmore', // Custom icon for Invoices
+            'show_in_menu'  => 'billing' // Display as a submenu under Billing
         )
     );
 }
@@ -103,7 +119,6 @@ add_action('init', 'create_custom_post_types');
 
 function billing_load_custom_templates( $template ) {
     global $post;
-
     if (isset($post) && !empty($post)) {
         if ('clients' === $post->post_type) {
             $template = plugin_dir_path(__FILE__) . 'single-clients.php';
@@ -111,7 +126,6 @@ function billing_load_custom_templates( $template ) {
             $template = plugin_dir_path(__FILE__) . 'single-invoices.php';
         }
     }
-
     return $template;
 }
 add_filter('template_include', 'billing_load_custom_templates', 99);
